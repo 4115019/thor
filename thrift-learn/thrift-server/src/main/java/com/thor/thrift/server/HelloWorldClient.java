@@ -5,6 +5,8 @@ import com.thor.thrift.server.model.RequestType;
 import com.thor.thrift.server.service.api.HelloWordService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TCompactProtocol;
+import org.apache.thrift.protocol.TJSONProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
@@ -20,8 +22,8 @@ public class HelloWorldClient {
         //transport = new TFramedTransport(new TSocket(SERVER_IP, SERVER_PORT));
 
         TProtocol protocol = new TBinaryProtocol(transport);
-        //TProtocol protocol = new TCompactProtocol(transport);
-        //TProtocol protocol = new TJSONProtocol(transport);
+//        TProtocol protocol = new TCompactProtocol(transport);
+//        TProtocol protocol = new TJSONProtocol(transport);
         HelloWordService.Client client = new HelloWordService.Client(protocol);
         transport.open();
 
@@ -35,8 +37,8 @@ public class HelloWorldClient {
         /**
          * 第二种请求方式
          */
-        request.setType(RequestType.QUERY_TIME).setName("huangpin");
-        System.out.println(client.doAction(request));
+//        request.setType(RequestType.QUERY_TIME).setName("huangpin");
+//        System.out.println(client.doAction(request));
 
         transport.close();
 
