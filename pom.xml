@@ -13,6 +13,26 @@
         <module>thrift-learn</module>
         <module>springboot-learn</module>
     </modules>
+    <properties>
+        <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
+        <lombok.version>1.16.18</lombok.version>
+        <fastjson.version>1.2.54</fastjson.version>
+        <http.version>4.5.2</http.version>
+    </properties>
 
+    <!--<dependencyManagement>-->
+        <!--<dependencies>-->
+            <!--<dependency>-->
+                <!--<groupId>org.springframework.boot</groupId>-->
+                <!--<artifactId>spring-boot-dependencies</artifactId>-->
+                <!--<version>${spring.boot.version}</version>-->
+            <!--</dependency>-->
+            <!--<dependency>-->
+                <!--<groupId>org.projectlombok</groupId>-->
+                <!--<artifactId>lombok</artifactId>-->
+                <!--<version>${lombok.version}</version>-->
+            <!--</dependency>-->
+        <!--</dependencies>-->
+    <!--</dependencyManagement>-->
 
 </project>

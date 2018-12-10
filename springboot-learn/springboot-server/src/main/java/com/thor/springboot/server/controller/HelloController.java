@@ -1,7 +1,10 @@
 package com.thor.springboot.server.controller;
 
+import com.thor.springboot.server.model.HelloReqDTO;
+import com.thor.springboot.server.util.argument.resolver.JSONParam;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -11,10 +14,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HelloController {
 
-    @RequestMapping("/hello")
+    @RequestMapping(value = "/hello",
+            method = RequestMethod.POST)
     @ResponseBody
-    public String index(){
-
+    public String index(@JSONParam HelloReqDTO reqDTO) {
         return "helloWorld";
     }
 }
