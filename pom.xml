@@ -11,6 +11,7 @@
     <modules>
         <module>netty-learn</module>
         <module>thrift-learn</module>
+        <module>springboot-learn</module>
     </modules>
 
 
