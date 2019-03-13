@@ -8,6 +8,7 @@ import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TCompactProtocol;
 import org.apache.thrift.protocol.TJSONProtocol;
 import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 
@@ -18,8 +19,8 @@ import org.apache.thrift.transport.TTransport;
 public class HelloWorldClient {
 
     public static void main(String[] args) throws TException {
-        TTransport transport = new TSocket("localhost", 8888);
-        //transport = new TFramedTransport(new TSocket(SERVER_IP, SERVER_PORT));
+        TTransport transport = new TFramedTransport(new TSocket("127.0.0.1", 8888));
+        //transport =
 
         TProtocol protocol = new TBinaryProtocol(transport);
 //        TProtocol protocol = new TCompactProtocol(transport);

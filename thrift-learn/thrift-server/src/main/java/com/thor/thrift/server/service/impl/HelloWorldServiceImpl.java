@@ -14,7 +14,6 @@ import java.util.Date;
  */
 public class HelloWorldServiceImpl implements HelloWordService.Iface {
 
-    @Override
     public String doAction(Request request) throws TException {
         System.out.println("Get request: " + request);
 

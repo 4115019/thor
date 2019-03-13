@@ -27,6 +27,6 @@ public class HelloReqDTO {
 
     @AssertTrue(message = "请求参数有误2222")
     public boolean isValid2(){
-        return false;
+        return true;
     }
 }
