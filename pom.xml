@@ -13,8 +13,8 @@
         <module>thrift-learn</module>
         <module>springboot-learn</module>
         <module>java-learn</module>
-        <module>spider</module>
         <module>tb-manager</module>
+        <module>china-mobile</module>
     </modules>
     <properties>
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
