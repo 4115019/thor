@@ -15,6 +15,11 @@
         <module>java-learn</module>
         <module>tb-manager</module>
         <module>china-mobile</module>
+        <module>prediction</module>
+        <module>common-util</module>
+        <module>dispatch</module>
+        <module>leet</module>
+        <module>bitcoin</module>
     </modules>
     <properties>
         <spring.boot.version>2.1.0.RELEASE</spring.boot.version>
