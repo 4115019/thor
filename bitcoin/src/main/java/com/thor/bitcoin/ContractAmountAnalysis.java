@@ -11,8 +11,8 @@ import com.alibaba.fastjson.JSONObject;
 public class ContractAmountAnalysis {
     public static void main(String[] args) throws Exception {
         JSONArray data = JSON.parseArray(FileUtil.getFileContent("/Users/hp/Desktop/data/formated_data.json"));
-        String benefitBeginTime = "2020-01-08 00:00:00";
-        String benefitEndTime = "2020-01-15 24:00:00";
+        String benefitBeginTime = "2020-01-16 00:00:00";
+        String benefitEndTime = "2020-01-16 24:00:00";
 
 //        testBestPoint(benefitBeginTime, benefitEndTime, data);
         testBenefit(benefitBeginTime, benefitEndTime, data, 2, 3, 3, 2, false);
@@ -83,6 +83,7 @@ public class ContractAmountAnalysis {
             JSONArray oneData = data.getJSONArray(i);
             if (oneData.getString(0).compareTo(beginTime) >= 0
                     && oneData.getString(0).compareTo(endTime) <= 0) {
+
                 if (oneData.getDoubleValue(9) > lastDistancce) {
                     if (haveMorePoint == 0) {
                         firstMoreDistance = oneData.getDoubleValue(9);
@@ -101,7 +102,6 @@ public class ContractAmountAnalysis {
 ////                    haveMore = true;
 //                    morePrice = (morePrice + oneData.getDoubleValue(1)) / 2;
 //                }
-
 
                 if (!haveMore && haveMorePoint > buyMorePoint) {
                     haveMore = true;
@@ -226,6 +226,7 @@ public class ContractAmountAnalysis {
         double price = 0;
 
         double lessBenefit = 0;
+        double benefit = 0;
         for (int i = begin; i < data.size(); i++) {
             lessBenefit = 0;
             JSONArray oneData = data.getJSONArray(i);
@@ -236,13 +237,14 @@ public class ContractAmountAnalysis {
                         price));
             }
             if (i < end) {
-                System.out.println(String.format("时间：%s，价格：%s，收益：%s",
+                String index = oneData.getDoubleValue(9) > data.getJSONArray(i - 1).getDoubleValue(9) ? "⬆️" : "⤵️";
+                System.out.println(String.format("时间：%s，价格：%s，收益：%s，distance：%s",
                         oneData.getString(0),
                         oneData.getDoubleValue(1),
-                        type == 1 ? oneData.getDoubleValue(1) - price : price - oneData.getDoubleValue(1)));
+                        type == 1 ? oneData.getDoubleValue(1) - price : price - oneData.getDoubleValue(1),
+                        index));
             }
 
-            double benefit = 0;
             if (i == end) {
                 benefit = type == 1 ? oneData.getDoubleValue(1) - price : price - oneData.getDoubleValue(1);
                 System.out.println(String.format("时间：%s,方向：%s，开仓价格：%s，平仓价格：%s，收益：%s",
@@ -253,14 +255,14 @@ public class ContractAmountAnalysis {
                         benefit));
             }
 
-            if (i > end) {
+            if (i > end && benefit < 0) {
                 lessBenefit += ((type == 1 ?
                         oneData.getDoubleValue(1) - price
                         : price - oneData.getDoubleValue(1)) - benefit);
             }
 
-            if (i - end > 5) {
-                System.out.println(String.format("平均少收益：%s", lessBenefit / 5));
+            if (i - end > 2) {
+                System.out.println(String.format("平均少收益：%s", lessBenefit / 2));
                 break;
             }
         }

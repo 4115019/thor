@@ -68,7 +68,7 @@ public class ContractInfoGenerator {
     }
 
     public static void formatData() throws Exception {
-        String fileContent = FileUtil.getFileContent("/Users/hp/Desktop/contactInfo");
+        String fileContent = FileUtil.getFileContent("/Users/hp/Desktop/data/origin_data.json");
         JSONObject dataJSON = JSON.parseObject("{" + fileContent.substring(0, fileContent.length() - 1) + "}");
 
         JSONArray result = new JSONArray();
