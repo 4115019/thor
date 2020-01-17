@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author huangpin
  * @date 2020-01-14
@@ -17,14 +20,14 @@ public class ContractAmountPlusAnalysis {
 
     public static void main(String[] args) throws Exception {
         JSONArray data = JSON.parseArray(FileUtil.getFileContent("/Users/hp/Desktop/data/formated_data.json"));
-        String benefitBeginTime = "2020-01-08 00:00:00";
+        String benefitBeginTime = "2020-01-17 00:00:00";
         String benefitEndTime = "2020-01-17 24:00:00";
 
-        testBenefitPlus(benefitBeginTime, benefitEndTime, data, false, 700);
+        testBenefitPlus(benefitBeginTime, benefitEndTime, data, false, 1100);
 
 //        double bestBenefit = 0;
 //        int bestPoint = 0;
-//        for (int i = 1; i < 20; i++) {
+//        for (int i = 1; i < 30; i++) {
 //            buyMorePoint = 2;
 //            sellMorePoint = 3;
 //            buyLessPoint = 3;
@@ -70,7 +73,7 @@ public class ContractAmountPlusAnalysis {
         for (int i = 0; i < data.size(); i++) {
             JSONArray oneData = data.getJSONArray(i);
 
-            if (i > point && i % point == 0) {
+            if (i > point && i % 100 == 0) {
                 testBestPoint(i - point, i, data);
                 JSONArray subPointDetail = new JSONArray();
                 subPointDetail.add(oneData.getString(0));
@@ -208,10 +211,27 @@ public class ContractAmountPlusAnalysis {
                                 i, j, k, l, false);
                         if (benefit > bestBenefit) {
                             bestBenefit = benefit;
-                            buyMorePoint = i;
-                            sellMorePoint = j;
-                            buyLessPoint = k;
-                            sellLessPoint = l;
+                            if (i > 2){
+                                buyMorePoint = i;
+                            } else {
+                                buyMorePoint = 2;
+                            }
+                            if (j < 3){
+                                sellMorePoint = j;
+                            } else {
+                                sellMorePoint = 3;
+                            }
+                            if (k > 3){
+                                buyLessPoint = k;
+                            } else {
+                                buyLessPoint = 3;
+                            }
+//                            buyLessPoint = k;
+                            if (l < 2){
+                                sellLessPoint = l;
+                            } else {
+                                sellLessPoint = 2;
+                            }
                         }
                     }
                 }

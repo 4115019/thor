@@ -12,11 +12,11 @@ public class ContractAmountAnalysis {
     public static void main(String[] args) throws Exception {
         JSONArray data = JSON.parseArray(FileUtil.getFileContent("/Users/hp/Desktop/data/formated_data.json"));
         String benefitBeginTime = "2020-01-08 00:00:00";
-        String benefitEndTime = "2020-01-17 24:00:00";
+        String benefitEndTime = "2020-01-15 24:00:00";
 
         testBestPoint(benefitBeginTime, benefitEndTime, data);
 //        testBenefit(benefitBeginTime, benefitEndTime, data,
-//                2, 3, 3, 2, false);
+//                2, 4, 5, 3, false);
     }
 
     public static void testBestPoint(String beginTime, String endTime, JSONArray data) {
@@ -56,6 +56,7 @@ public class ContractAmountAnalysis {
                                      int sellLessPoint,
                                      boolean analysis) {
         double lastDistancce = 0;
+        double last1HDistance = 0;
 
         boolean haveMore = false;
         int haveMorePoint = 0;
