@@ -20,10 +20,10 @@ public class ContractAmountPlusAnalysis {
 
     public static void main(String[] args) throws Exception {
         JSONArray data = JSON.parseArray(FileUtil.getFileContent("/Users/hp/Desktop/data/formated_data.json"));
-        String benefitBeginTime = "2020-01-17 00:00:00";
-        String benefitEndTime = "2020-01-17 24:00:00";
+        String benefitBeginTime = "2020-02-10 00:00:00";
+        String benefitEndTime = "2020-02-15 24:00:00";
 
-        testBenefitPlus(benefitBeginTime, benefitEndTime, data, false, 1100);
+        testBenefitPlus(benefitBeginTime, benefitEndTime, data, false, 1500);
 
 //        double bestBenefit = 0;
 //        int bestPoint = 0;
@@ -73,18 +73,18 @@ public class ContractAmountPlusAnalysis {
         for (int i = 0; i < data.size(); i++) {
             JSONArray oneData = data.getJSONArray(i);
 
-            if (i > point && i % 100 == 0) {
-                testBestPoint(i - point, i, data);
-                JSONArray subPointDetail = new JSONArray();
-                subPointDetail.add(oneData.getString(0));
-                subPointDetail.add(buyMorePoint);
-                subPointDetail.add(sellMorePoint);
-                subPointDetail.add(buyLessPoint);
-                subPointDetail.add(sellLessPoint);
-                pointDetail.add(subPointDetail);
-            }
             if (oneData.getString(0).compareTo(beginTime) >= 0
                     && oneData.getString(0).compareTo(endTime) <= 0) {
+                if (i > point && i % 100 == 0) {
+                    testBestPoint(i - point, i, data);
+                    JSONArray subPointDetail = new JSONArray();
+                    subPointDetail.add(oneData.getString(0));
+                    subPointDetail.add(buyMorePoint);
+                    subPointDetail.add(sellMorePoint);
+                    subPointDetail.add(buyLessPoint);
+                    subPointDetail.add(sellLessPoint);
+                    pointDetail.add(subPointDetail);
+                }
 
                 if (oneData.getDoubleValue(9) > lastDistancce) {
                     if (haveMorePoint == 0) {
@@ -100,7 +100,15 @@ public class ContractAmountPlusAnalysis {
                     haveMorePoint = 0;
                 }
 
-                if (!haveMore && haveMorePoint > buyMorePoint) {
+//                if (haveMore) {
+//                    if (haveMorePoint > buyMorePoint) {
+//                        System.out.println(String.format("做多确认，时间：%s,方向：做多，收益：%s", oneData.getString(0), oneData.getDoubleValue(1) - morePrice));
+//                    } else {
+//                        System.out.println(String.format("做多跟踪，时间：%s,方向：做多，收益：%s", oneData.getString(0), oneData.getDoubleValue(1) - morePrice));
+//                    }
+//                }
+
+                if (!haveMore && haveMorePoint > 2 && buyMorePoint < 5 && sellMorePoint < 5) {
                     haveMore = true;
                     morePrice = oneData.getDoubleValue(1);
                     haveMoreDistance = oneData.getDoubleValue(9) - firstMoreDistance;
@@ -114,7 +122,15 @@ public class ContractAmountPlusAnalysis {
                     tradeTime++;
                 }
 
-                if (!haveLess && haveLessPoint > buyLessPoint) {
+//                if (haveLess) {
+//                    if (haveLessPoint > buyLessPoint) {
+//                        System.out.println(String.format("做空确认，时间：%s,方向：做空，收益：%s", oneData.getString(0), lessPrice - oneData.getDoubleValue(1)));
+//                    } else {
+//                        System.out.println(String.format("做空跟踪，时间：%s,方向：做空，收益：%s", oneData.getString(0), lessPrice - oneData.getDoubleValue(1)));
+//                    }
+//                }
+
+                if (!haveLess && haveLessPoint > 3 && buyLessPoint < 5 && sellLessPoint < 5) {
                     haveLess = true;
                     lessPrice = oneData.getDoubleValue(1);
                     haveLessDistance = oneData.getDoubleValue(9) - firstLessDistance;
@@ -128,9 +144,9 @@ public class ContractAmountPlusAnalysis {
                     tradeTime++;
                 }
 
-                if (haveMore && haveLessPoint > sellMorePoint) {
+                double thisBenefit = oneData.getDoubleValue(1) - morePrice;
+                if (haveMore && haveLessPoint > 3) {
                     haveMore = false;
-                    double thisBenefit = oneData.getDoubleValue(1) - morePrice;
                     if (thisBenefit > 0) {
                         moreMore++;
                         moreMoreAmount += thisBenefit;
@@ -147,9 +163,9 @@ public class ContractAmountPlusAnalysis {
                     tradeTime++;
                 }
 
-                if (haveLess && haveMorePoint > sellLessPoint) {
+                thisBenefit = lessPrice - oneData.getDoubleValue(1);
+                if (haveLess && haveMorePoint > 2) {
                     haveLess = false;
-                    double thisBenefit = lessPrice - oneData.getDoubleValue(1);
                     if (thisBenefit > 0) {
                         lessMore++;
                         lessMoreAmount += thisBenefit;
@@ -183,6 +199,8 @@ public class ContractAmountPlusAnalysis {
         System.out.println("做空亏损次数：" + lessLess);
         System.out.println("做空亏损金额：" + lessLessAmount);
         System.out.println(pointDetail.toJSONString());
+        System.out.println(moreMore * 1.0 / moreLess);
+        System.out.println(lessMore * 1.0 / lessLess);
 
         if (analysis) {
             System.out.println("交易明细分析开始》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》》");
@@ -211,26 +229,17 @@ public class ContractAmountPlusAnalysis {
                                 i, j, k, l, false);
                         if (benefit > bestBenefit) {
                             bestBenefit = benefit;
-                            if (i > 2){
+                            if (i > 2) {
                                 buyMorePoint = i;
-                            } else {
-                                buyMorePoint = 2;
                             }
-                            if (j < 3){
+                            if (j > 2) {
                                 sellMorePoint = j;
-                            } else {
-                                sellMorePoint = 3;
                             }
-                            if (k > 3){
+                            if (k > 2) {
                                 buyLessPoint = k;
-                            } else {
-                                buyLessPoint = 3;
                             }
-//                            buyLessPoint = k;
-                            if (l < 2){
+                            if (l > 2) {
                                 sellLessPoint = l;
-                            } else {
-                                sellLessPoint = 2;
                             }
                         }
                     }

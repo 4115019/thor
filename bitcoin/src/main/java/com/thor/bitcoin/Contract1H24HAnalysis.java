@@ -4,84 +4,21 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import static com.thor.bitcoin.ContractAmountAnalysis.testBestPoint;
+
 /**
  * @author huangpin
  * @date 2020-01-14
  */
-public class ContractAmountAnalysis {
+public class Contract1H24HAnalysis {
     public static void main(String[] args) throws Exception {
         JSONArray data = JSON.parseArray(FileUtil.getFileContent("/Users/hp/Desktop/data/formated_data.json"));
-        String benefitBeginTime = "2020-02-01 00:00:00";
+        String benefitBeginTime = "2020-02-17 00:00:00";
         String benefitEndTime = "2020-02-18 24:00:00";
 
-//        JSONArray detail = new JSONArray();
-//        for (int i = 1; i < 14; i++) {
-//            String begin = "2020-02-0" + i + " 00:00:00";
-//            String end = "2020-02-0" + i + " 24:00:00";
-//            double benefit = testBenefit(begin, end, data, 2, 3, 3, 2, false, false);
-//            JSONObject subDetail = new JSONObject();
-//            subDetail.put("begin",begin);
-//            subDetail.put("end",end);
-//            subDetail.put("benefit",benefit);
-//            detail.add(subDetail);
-//        }
-//        System.out.println(detail.toJSONString());
-
 //        testBestPoint(benefitBeginTime, benefitEndTime, data);
-//        testIndexLimit(benefitBeginTime, benefitEndTime, data);
-//        testAll(benefitBeginTime, benefitEndTime, data);
         testBenefit(benefitBeginTime, benefitEndTime, data,
-                2, 3, 3, 2, 0, false, true);
-    }
-
-    public static void testAll(String beginTime, String endTime, JSONArray data) {
-        double bestBenefit = 0;
-        int buyMorePoint = 0;
-        int sellMorePoint = 0;
-        int buyLessPoint = 0;
-        int sellLessPoint = 0;
-        int indexLimit = 0;
-        for (int i = 1; i < 6; i++) {
-            for (int j = 1; j < 6; j++) {
-                for (int k = 1; k < 6; k++) {
-                    for (int l = 1; l < 6; l++) {
-                        for (int m = 0; m < 10; m++) {
-                            double benefit = testBenefit(beginTime, endTime, data,
-                                    i, j, k, l, m, false, false);
-                            if (benefit > bestBenefit) {
-                                bestBenefit = benefit;
-                                buyMorePoint = i;
-                                sellMorePoint = j;
-                                buyLessPoint = k;
-                                sellLessPoint = l;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        System.out.println(bestBenefit);
-        System.out.println(buyMorePoint);
-        System.out.println(sellMorePoint);
-        System.out.println(buyLessPoint);
-        System.out.println(sellLessPoint);
-        System.out.println(indexLimit);
-    }
-
-    public static void testIndexLimit(String beginTime, String endTime, JSONArray data) {
-        double bestBenefit = 0;
-        double indexLimit = 0;
-        for (int i = 1; i < 10; i++) {
-
-            double benefit = testBenefit(beginTime, endTime, data,
-                    4, 4, 4, 4, i, false, false);
-            if (benefit > bestBenefit) {
-                bestBenefit = benefit;
-                indexLimit = i;
-            }
-            System.out.println(bestBenefit);
-            System.out.println(indexLimit);
-        }
+                2, 4, 2, 4, false, true);
     }
 
     public static void testBestPoint(String beginTime, String endTime, JSONArray data) {
@@ -95,7 +32,7 @@ public class ContractAmountAnalysis {
                 for (int k = 1; k < 10; k++) {
                     for (int l = 1; l < 10; l++) {
                         double benefit = testBenefit(beginTime, endTime, data,
-                                i, j, k, l, 0, false, false);
+                                i, j, k, l, false, false);
                         if (benefit > bestBenefit) {
                             bestBenefit = benefit;
                             buyMorePoint = i;
@@ -119,11 +56,13 @@ public class ContractAmountAnalysis {
                                      int sellMorePoint,
                                      int buyLessPoint,
                                      int sellLessPoint,
-                                     int indexLimit,
                                      boolean analysis,
                                      boolean sout) {
         double lastDistancce = 0;
         double last1HDistance = 0;
+        double last1HAmount = 0;
+
+        double last1HDistanceAmount = 0;
 
         boolean haveMore = false;
         int haveMorePoint = 0;
@@ -161,8 +100,9 @@ public class ContractAmountAnalysis {
         int morePlusTradeTime = 0;
         int lessPlusTradeTime = 0;
 
-        String moreInfo = "";
-        String lessInfo = "";
+        int haveMore1HPoint = 0;
+        int haveLess1HPoint = 0;
+
 
         JSONArray tradeDetail = new JSONArray();
         for (int i = 0; i < data.size(); i++) {
@@ -170,23 +110,44 @@ public class ContractAmountAnalysis {
             if (oneData.getString(0).compareTo(beginTime) >= 0
                     && oneData.getString(0).compareTo(endTime) <= 0) {
 
-                if (oneData.getDoubleValue(9) > lastDistancce) {
-                    if (haveMorePoint == 0) {
-                        firstMoreDistance = oneData.getDoubleValue(9);
-                    }
-                    haveMorePoint++;
-                    haveLessPoint = 0;
+                if (oneData.getDoubleValue(10) > last1HDistance) {
+                    haveMore1HPoint++;
+                    haveLess1HPoint = 0;
                 } else {
-                    if (haveLessPoint == 0) {
-                        firstLessDistance = oneData.getDoubleValue(9);
-                    }
-                    haveLessPoint++;
-                    haveMorePoint = 0;
+                    haveLess1HPoint++;
+                    haveMore1HPoint = 0;
                 }
 
-                double index = oneData.getDoubleValue(10) / last1HDistance;
-                if (index < 0) {
-                    index *= -1;
+//                double this1HDistanceAmount = oneData.getDoubleValue(10) - last1HDistance;
+//
+//                if (this1HDistanceAmount * last1HDistanceAmount > 0) {
+//                    if (this1HDistanceAmount > 0 && this1HDistanceAmount > last1HDistanceAmount) {
+//                        haveMorePoint++;
+//                        haveLessPoint = 0;
+//                    } else if (this1HDistanceAmount < 0 && this1HDistanceAmount < last1HDistanceAmount) {
+//                        haveLessPoint++;
+//                        haveMorePoint = 0;
+//                    } else {
+//                        haveMorePoint = 0;
+//                        haveLessPoint = 0;
+//                    }
+//                } else {
+//                    haveMorePoint = 0;
+//                    haveLessPoint = 0;
+//                }
+                double this1HAmount = oneData.getDoubleValue(7) + oneData.getDoubleValue(8);
+
+                if (this1HAmount > last1HAmount) {
+                    if (oneData.getDoubleValue(10) > last1HDistance) {
+                        haveMorePoint++;
+                        haveLessPoint = 0;
+                    } else {
+                        haveLessPoint++;
+                        haveMorePoint = 0;
+                    }
+                } else {
+                    haveMorePoint = 0;
+                    haveLessPoint = 0;
                 }
 
                 if (sout && haveMore) {
@@ -213,7 +174,8 @@ public class ContractAmountAnalysis {
                     }
                 }
 
-                if (!haveMore && haveMorePoint > buyMorePoint && index > indexLimit) {
+                if (!haveMore && haveMorePoint > buyMorePoint && oneData.getDoubleValue(10) < 0) {
+//                if (!haveMore && haveMorePoint > buyMorePoint) {
                     haveMore = true;
                     morePrice = oneData.getDoubleValue(1);
                     haveMoreDistance = oneData.getDoubleValue(9) - firstMoreDistance;
@@ -252,7 +214,8 @@ public class ContractAmountAnalysis {
                     }
                 }
 
-                if (!haveLess && haveLessPoint > buyLessPoint && index > indexLimit) {
+                if (!haveLess && haveLessPoint > buyLessPoint && oneData.getDoubleValue(10) > 0) {
+//                if (!haveLess && haveLessPoint > buyLessPoint) {
                     haveLess = true;
                     lessPrice = oneData.getDoubleValue(1);
                     haveLessDistance = oneData.getDoubleValue(9) - firstLessDistance;
@@ -267,14 +230,13 @@ public class ContractAmountAnalysis {
                 }
 
                 double thisBenefit = oneData.getDoubleValue(1) - morePrice;
-                if (haveMore && haveLessPoint > sellMorePoint) {
+                if (haveMore && haveLess1HPoint > sellMorePoint) {
                     if (haveMorePlus) {
                         haveMorePlus = false;
                         morePlusTradeTime++;
                         morePlusBenefit += oneData.getDoubleValue(1) - morePlusPrice;
                     }
                     haveMore = false;
-
                     if (thisBenefit > 0) {
                         moreMore++;
                         moreMoreAmount += thisBenefit;
@@ -283,7 +245,6 @@ public class ContractAmountAnalysis {
                         moreLessAmount -= thisBenefit;
                     }
                     benefit += thisBenefit;
-
                     System.out.println(String.format("时间：%s,方向：平多，价格：%s，收益：%s，distance：%s", oneData.getString(0), oneData.getDoubleValue(1), thisBenefit, haveMoreDistance));
                     JSONObject subDetail = new JSONObject();
                     subDetail.put("type", 2);
@@ -293,14 +254,13 @@ public class ContractAmountAnalysis {
                 }
 
                 thisBenefit = lessPrice - oneData.getDoubleValue(1);
-                if (haveLess && haveMorePoint > sellLessPoint) {
+                if (haveLess && haveMore1HPoint > sellLessPoint) {
                     if (haveLessPlus) {
                         haveLessPlus = false;
                         lessPlusTradeTime++;
                         lessPlusBenefit += lessPlusPrice - oneData.getDoubleValue(1);
                     }
                     haveLess = false;
-
                     if (thisBenefit > 0) {
                         lessMore++;
                         lessMoreAmount += thisBenefit;
@@ -320,7 +280,9 @@ public class ContractAmountAnalysis {
             }
 
             lastDistancce = oneData.getDoubleValue(9);
-            last1HDistance = oneData.getDoubleValue(10);
+            last1HAmount = oneData.getDoubleValue(7) + oneData.getDoubleValue(8);
+            last1HDistanceAmount = oneData.getDoubleValue(10) - last1HDistance;
+            last1HDistance = oneData.getDouble(10);
         }
 
         System.out.println(beginTime + "至" + endTime);
